@@ -1,7 +1,7 @@
 <h1>Packages and Billing <span style="font-size:14px;font-weight:normal;"><a href="invoices/">View your invoices</a></span></h1>
 
 <script type="text/javascript">
-	function UpdatePrice(monthly, i) {
+	function UpdatePrice(monthly, i, discount) {
 		var term = document.getElementById('term'+i).value;
 		switch(term){
 		case '1':
@@ -20,7 +20,7 @@
 			var multiplier = 12*(100-{{$discounts.12}})/100;
 			break;	
 		}
-		document.getElementById('final'+i).innerHTML = (multiplier * monthly).toFixed(2);
+		document.getElementById('final'+i).innerHTML = (((multiplier * monthly)/100)*(100-discount)).toFixed(2);
 	}
 </script>
 
@@ -56,7 +56,7 @@
 			{if $package.package_discount > 0}
 				<tr>
 					<td>Package Discount</td>
-					<td>-&pound;{{$package.package_discount}}</td>
+					<td>-&pound;{{$package.package_discount|number_format:2}}</td>
 				</tr>
 			{/if}
 			
@@ -80,7 +80,7 @@
 			<tr>
 				<td>Contract Length</td>
 				<td>
-					<select name="term" id="term{{$pid}}" onchange="UpdatePrice({{$package.monthly}},{{$pid}})" style="padding:0;height:20px; margin-bottom:0; width:150px;">
+					<select name="term" id="term{{$pid}}" onchange="UpdatePrice({{$package.monthly}},{{$pid}},{$package.discount})" style="padding:0;height:20px; margin-bottom:0; width:150px;">
 						<option value="1">1 Month</option>
 						<option value="2">2 Month (-{{$discounts.2}}%)</option>
 						<option value="3">3 Month (-{{$discounts.3}}%)</option>
@@ -94,7 +94,7 @@
 				<td>Final Price</td>
 				<td>&pound; <span id="final{{$pid}}"></span></td>
 			</tr>
-			<script type="text/javascript">UpdatePrice({{$package.monthly}},{{$pid}});</script>
+			<script type="text/javascript">UpdatePrice({{$package.monthly}},{{$pid}},{$package.discount});</script>
 
 			<tr>
 				<td>Payment Method</td>
